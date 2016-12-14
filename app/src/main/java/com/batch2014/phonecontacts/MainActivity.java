@@ -1,7 +1,11 @@
 package com.batch2014.phonecontacts;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,13 +13,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
-
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,6 +73,12 @@ public class MainActivity extends Activity {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        phones.close();
     }
 
     // Load data on background
@@ -132,19 +142,29 @@ public class MainActivity extends Activity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                    Log.e("search", "here---------------- listener");
-
                     SelectUser data = selectUsers.get(i);
+
+                    try {
+                        Intent callIntent = new Intent(Intent.ACTION_CALL);
+                        callIntent.setData(Uri.parse("tel:" + data.getPhone().toString()));
+                        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                                Manifest.permission.CALL_PHONE)
+                                == PackageManager.PERMISSION_GRANTED) {
+
+                            startActivity(callIntent);
+
+                        }
+
+                    } catch (ActivityNotFoundException activityException) {
+                        Log.e("Calling a Phone Number", "Call failed", activityException);
+                    }
+
+
+
                 }
             });
 
             listView.setFastScrollEnabled(true);
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        phones.close();
     }
 }
