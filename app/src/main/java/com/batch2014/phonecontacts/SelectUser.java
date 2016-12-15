@@ -2,9 +2,16 @@ package com.batch2014.phonecontacts;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
 
-public class SelectUser {
+
+public class SelectUser implements Serializable {
+    private static final long serialVersionUID = 1L;
     String name;
+    Bitmap thumb;
+    String phone;
+    Boolean checkedBox = false;
+    String email;
 
     public Bitmap getThumb() {
         return thumb;
@@ -14,8 +21,6 @@ public class SelectUser {
         this.thumb = thumb;
     }
 
-    Bitmap thumb;
-
     public String getPhone() {
         return phone;
     }
@@ -23,8 +28,6 @@ public class SelectUser {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
-    String phone;
 
     public Boolean getCheckedBox() {
         return checkedBox;
@@ -34,8 +37,6 @@ public class SelectUser {
         this.checkedBox = checkedBox;
     }
 
-    Boolean checkedBox = false;
-
     public String getName() {
         return name;
     }
@@ -43,8 +44,6 @@ public class SelectUser {
     public void setName(String name) {
         this.name = name;
     }
-
-    String email;
 
     public String getEmail() {
         return email;

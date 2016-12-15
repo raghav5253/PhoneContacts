@@ -2,6 +2,7 @@ package com.batch2014.phonecontacts;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
-
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
         listView = (ListView) findViewById(R.id.contacts_list);
 
         phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+
         LoadContact loadContact = new LoadContact();
         loadContact.execute();
 
@@ -69,6 +70,12 @@ public class MainActivity extends Activity {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        phones.close();
     }
 
     // Load data on background
@@ -94,7 +101,7 @@ public class MainActivity extends Activity {
                     String id = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
                     String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    String EmailAddr = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA2));
+                    String EmailAddr = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
                     String image_thumb = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI));
                     try {
                         if (image_thumb != null) {
@@ -110,7 +117,7 @@ public class MainActivity extends Activity {
                     selectUser.setThumb(bit_thumb);
                     selectUser.setName(name);
                     selectUser.setPhone(phoneNumber);
-                    selectUser.setEmail(id);
+                    selectUser.setEmail(EmailAddr);
                     selectUser.setCheckedBox(false);
                     selectUsers.add(selectUser);
                 }
@@ -135,16 +142,17 @@ public class MainActivity extends Activity {
                     Log.e("search", "here---------------- listener");
 
                     SelectUser data = selectUsers.get(i);
+
+
+                    Intent intent = new Intent("com.batch2014.phonecontacts.ContactDetailsActivity");
+
+                    intent.putExtra("data", data);
+                    startActivity(intent);
+
                 }
             });
 
             listView.setFastScrollEnabled(true);
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        phones.close();
     }
 }
